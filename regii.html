@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration</title>
+    <style>
+    /* Registration Form */
+    .registration {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        margin: 40px auto;
+        text-align: left;
+    }
+
+    .registration h2 {
+        color: #004080;
+        margin-bottom: 20px;
+    }
+
+    .registration label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .registration input {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+    }
+
+    .registration button {
+        width: 100%;
+        padding: 10px;
+        background-color: #004080;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .registration button:hover {
+        background-color: #003060;
+    }
+</style>
+ <!-- Registration Section -->
+<section id="register" class="section">
+    <div class="registration">
+        <h2>Register</h2>
+        <form id="registration-form">
+            <label for="fullName">Full Name:</label>
+            <input type="text" id="fullName" name="fullName" pattern="^[a-zA-Z\s]+$" title="Please enter a valid full name" required>
+
+            <label for="registrationNumber">Registration Number:</label>
+            <input type="text" id="registrationNumber" name="registrationNumber" pattern="^BCS-\d{2}-\d{4}-\d{4}$" title="Format: BCS-00-0000-0000" required>
+
+            <label for="sex">Sex:</label>
+            <select id="sex" name="sex" required>
+                <option value="">Select</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+            </select>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="region">Region:</label>
+            <select id="region" name="region" required>
+                <option value="">Select</option>
+                <option value="arusha">Arusha</option>
+                <option value="dar-es-salaam">Dar es Salaam</option>
+                <option value="dodoma">Dodoma</option>
+                <option value="geita">Geita</option>
+                <option value="iringa">Iringa</option>
+                <option value="kagera">Kagera</option>
+                <option value="katavi">Katavi</option>
+                <option value="kigoma">Kigoma</option>
+            </select>
+
+            <label for="district">District:</label>
+            <select id="district" name="district" required>
+                <!-- Options will be dynamically loaded -->
+            </select>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" required>
+
+            <button type="submit">Register</button>
+        </form>
+    </div>
+</section>
+
+<script>
+    document.getElementById("registration-form").addEventListener("submit", function(event) {
+        event.preventDefault();
+        const password = document.getElementById("password").value;
+        const confirmPassword = document.getElementById("confirmPassword").value;
+        if (password !== confirmPassword) {
+            alert("Passwords do not match!");
+            return;
+        }
+        if (!/(?=.*[!@#$%^&*])/.test(password) || password.length < 8) {
+            alert("Password must be at least 8 characters long and include at least one special character!");
+            return;
+        }
+        this.submit();
+    });
+
+    document.getElementById("email").addEventListener("input", function() {
+        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailPattern.test(this.value)) {
+            this.setCustomValidity("Please enter a valid email address");
+        } else {
+            this.setCustomValidity("");
+        }
+    });
+
+    document.getElementById("registrationNumber").addEventListener("input", function() {
+        const regNumPattern = /^BCS-\d{2}-\d{4}-\d{4}$/;
+        if (!regNumPattern.test(this.value)) {
+            this.setCustomValidity("Format: BCS-00-0000-0000");
+        } else {
+            this.setCustomValidity("");
+        }
+    });
+
+    // Ajax for dynamically loading regions and districts
+    // Define regions and corresponding districts
+const regions = {
+    "arusha": ["Meru", "Arusha", "Karatu", "Longido", "Monduli", "Ngorongoro"],
+    "dar-es-salaam": ["Ilala", "Kinondoni", "Temeke", "Kigamboni", "Ubungo"],
+    "dodoma": ["Bahi", "Chamwino", "Chemba", "Dodoma", "Kondoa", "Kongwa", "Mpwapwa"],
+    "geita": ["Bukombe", "Chato", "Geita", "Mbogwe", "Nyang’hwale"],
+    "iringa": ["Iringa", "Kilolo", "Mafinga", "Mufindi"],
+    "kagera": ["Bukoba", "Muleba", "Karagwe", "Ngara", "Biharamulo", "Kyerwa", "Missenyi"],
+    "katavi": ["Mpanda", "Mlele", "Nsimbo"],
+    "kigoma": ["Kigoma", "Buhigwe", "Kasulu", "Kakonko", "Uvinza"]
+};
+
+const regionSelect = document.getElementById("region");
+const districtSelect = document.getElementById("district");
+
+// Populate districts based on selected region
+regionSelect.addEventListener("change", function() {
+    const selectedRegion = this.value;
+    districtSelect.innerHTML = '<option value="">Select</option>'; // Reset district dropdown
+
+    if (regions[selectedRegion]) {
+        regions[selectedRegion].forEach(district => {
+            const option = document.createElement("option");
+            option.value = district.toLowerCase().replace(/\s+/g, "-"); // Convert to lowercase with hyphens
+            option.textContent = district;
+            districtSelect.appendChild(option);
+        });
+    }
+});
